@@ -17,20 +17,32 @@ makePairs <- function(data)
 }
 
 library("RColorBrewer")
-myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
 
 # expand data frame for pairs plot
-PCA1to5<-as.data.frame(santarosa.pca$x[,1:3])
-gg1 = makePairs(PCA1to5)
+PCA1to3<-as.data.frame(santarosa.pca$x[,1:3])
+gg1 = makePairs(PCA1to3)
 
 resp <- normed[,2154]
 # new data frame mega PCA 1..5
 mega_PCA = data.frame(gg1$all, Performance=rep(resp, length=nrow(gg1$all)))
+Performance=rep(resp, length=nrow(gg1$all))
 
 # pairs plot
 ggplot(mega_PCA, aes_string(x = "x", y = "y")) + 
   facet_grid(xvar ~ yvar, scales = "free") + 
-  geom_point(aes(colour=Performance), na.rm = TRUE, alpha=0.8) + 
+  geom_point(aes(colour=Performance), na.rm = TRUE, alpha=0.5, size=1) + 
   stat_density(aes(x = x, y = ..scaled.. * diff(range(x)) + min(x)), 
                data = gg1$densities, position = "identity", 
-               colour = "grey20", geom = "line")
+               colour = "dodgerblue4", geom = "line", size=1, alpha=0.5) + 
+  scale_color_gradientn(colours = c("darkred", "yellow", "darkgreen")) + #set the pallete
+  #theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), #remove gridlines
+  theme(panel.grid.minor=element_blank(), #remove gridlines
+        legend.position="bottom", #legend at the bottom
+        axis.title.x = element_blank(), #remove x label
+        axis.title.y = element_blank()  #remove y label
+        )#end theme
+
+#save(SantarosaPCA,file="Santarosa3PCA.Rda")
+#load("...")
+
+quantile(PCA1to3[,1])
