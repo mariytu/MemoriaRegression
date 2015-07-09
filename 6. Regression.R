@@ -1,3 +1,4 @@
+#SOURCE: http://www.statmethods.net/stats/regression.html
 #*******************************MAIN PROGRAM*******************************#
 #load("SantarosaAllPCA.Rda") #If you made the third or fourth step (3. PCA)
 load("D:/Dropbox/Marianela Iturriaga/data/SantarosaAllPCA.Rda") #Absolute path from my computer

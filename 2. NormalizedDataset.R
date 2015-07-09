@@ -21,4 +21,4 @@ santarosaNormalized <- data.frame(twoColumns, normedSubset) #All dataset Normali
 
 View(santarosaNormalized)
 
-save(santarosaNormalized,file="SantarosaNormalized.Rda") #Save object in your Documents folder
+save(santarosaNormalized,file = "SantarosaNormalized.Rda") #Save object in your Documents folder

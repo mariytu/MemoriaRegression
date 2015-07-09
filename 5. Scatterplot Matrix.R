@@ -37,14 +37,14 @@ Performance = rep(performance, length = nrow(gg1$all))
 # pairs plot
 ggplot(mega_PCA, aes_string(x = "x", y = "y")) + 
   facet_grid(xvar ~ yvar, scales = "free") + 
-  geom_point(aes(colour=Performance), na.rm = TRUE, alpha=0.5, size=1) + 
+  geom_point(aes(colour = Performance), na.rm = TRUE, alpha = 0.5, size = 1) + 
   stat_density(aes(x = x, y = ..scaled.. * diff(range(x)) + min(x)), 
                data = gg1$densities, position = "identity", 
-               colour = "dodgerblue4", geom = "line", size=1, alpha=0.5) + 
+               colour = "dodgerblue4", geom = "line", size = 1, alpha = 0.5) + 
   scale_color_gradientn(colours = c("darkred", "yellow", "darkgreen")) + #set the pallete
   #theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), #remove gridlines
-  theme(panel.grid.minor=element_blank(), #remove gridlines
-        legend.position="bottom", #legend at the bottom
+  theme(panel.grid.minor = element_blank(), #remove gridlines
+        legend.position = "bottom", #legend at the bottom
         axis.title.x = element_blank(), #remove x label
         axis.title.y = element_blank()  #remove y label
         )#end theme

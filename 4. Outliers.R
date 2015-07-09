@@ -48,4 +48,4 @@ if (any(outliers)) { #Validation if outliers exist
 
 View(santarosaNormalized)
 
-save(santarosaNormalized,file="SantarosaNormalized.Rda") #Save object in your Documents folder
+save(santarosaNormalized,file = "SantarosaNormalized.Rda") #Save object in your Documents folder

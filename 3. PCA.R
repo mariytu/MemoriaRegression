@@ -25,9 +25,9 @@ predict(santarosa.pca, newdata = tail(subsetSantarosa, 2))
 plot(santarosa.pca, type = "l", main = NULL) #Plot of first 10 PCA
 
 #Alternative plot using ggplot
-install.packages("devtools")
+#install.packages("devtools")
 library(devtools)
-install_github("vqv/ggbiplot")
+#install_github("vqv/ggbiplot")
 library(ggbiplot)
 
 dataPlot <- data.frame(santarosaNormalized$N.Parcela..Longitud.de.onda, santarosa.pca$sdev)
@@ -35,15 +35,25 @@ names(dataPlot) <- c("PCA", "Variances")
 dataPlot <- dataPlot[1:10,]
 dataPlot <- CalculateVariance(dataPlot)
 
+ggplot(data = dataPlot, aes(x = PCA, y = Variances, group = 1)) +
+  geom_line(colour = "dodgerblue4") +
+  geom_point(colour = "dodgerblue4", size = 2) +
+  expand_limits(y = 0) +
+  xlab("PCs") + ylab("Variances") +
+  scale_x_continuous(breaks = dataPlot$PCA) +
+  theme(panel.grid.minor = element_blank(), #remove gridlines
+        legend.position = "bottom" #legend at the bottom
+  )#end theme
+
 #Plot PCA1/PCA2
 PCA1to2 <- data.frame(santarosa.pca$x[,1:2], performance)
 names(PCA1to2) <- c("PC1", "PC2", "Performance")
 
 ggplot(PCA1to2, aes_string(x = "PC1", y = "PC2")) + 
-  geom_point(aes(colour=Performance), na.rm = TRUE, alpha=0.8, size=2) + 
+  geom_point(aes(colour = Performance), na.rm = TRUE, alpha = 0.8, size = 2) + 
   scale_color_gradientn(colours = c("darkred", "yellow", "darkgreen")) + #set the pallete
-  theme(panel.grid.minor=element_blank(), #remove gridlines
-        legend.position="bottom" #legend at the bottom
+  theme(panel.grid.minor = element_blank(), #remove gridlines
+        legend.position = "bottom" #legend at the bottom
   )#end theme
 
-save(santarosa.pca,file="SantarosaAllPCA.Rda") #Save object in your Documents folder
+save(santarosa.pca,file = "SantarosaAllPCA.Rda") #Save object in your Documents folder

@@ -52,4 +52,4 @@ if (any(NA_values)) { #Validation if missing values exist
 
 View(santarosa)
 
-save(santarosa,file="Santarosa.Rda") #Save object in your Documents folder
+save(santarosa,file = "Santarosa.Rda") #Save object in your Documents folder
