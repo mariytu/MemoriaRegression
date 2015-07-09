@@ -1,34 +1,49 @@
-#PCA
-subsetSantarosa <- normed[,3:2153]
-#3 es la columna X350, 2153 es la columna X2500
-resp <- normed[,2154]
-#Columna con los resultados
+#*******************************FUNCTIONS*******************************#
+CalculateVariance <- function(x) {
+  for (i in 1:nrow(x)) {
+    x[i,2] <- x[i,2]*x[i,2]
+  }
+  return (x)
+}
 
-santarosa.pca <- prcomp(subsetSantarosa,
-                 center = TRUE,
-                 scale. = TRUE)
+#*******************************MAIN PROGRAM*******************************#
+#load("SantarosaNormalized.Rda") #If you made the second step (2. NormalizedDataset)
+load("D:/Dropbox/Marianela Iturriaga/data/SantarosaNormalized.Rda") #Absolute path from my computer
+
+#Preparing to PCA
+subsetSantarosa <- santarosaNormalized[,3:2153] #The third column is the first independent variable
+#and the last one is the column number 2153
+performance <- santarosaNormalized[,2154] #The column 2154 is the dependent variable
+
+#Apply PCA Algorithm
+santarosa.pca <- prcomp(subsetSantarosa, center = TRUE, scale. = TRUE)
 
 print(santarosa.pca)
-plot(santarosa.pca, type = "l")
-
-santarosa.pca #El pca1 es el más importante por los vectores propios
-
 summary(santarosa.pca)
-predict(santarosa.pca,newdata=tail(subsetSantarosa, 2))
+predict(santarosa.pca, newdata = tail(subsetSantarosa, 2))
 
+plot(santarosa.pca, type = "l", main = NULL) #Plot of first 10 PCA
+
+#Alternative plot using ggplot
 install.packages("devtools")
 library(devtools)
 install_github("vqv/ggbiplot")
 library(ggbiplot)
 
-library("RColorBrewer")
-myPalette <- colorRampPalette(rev(brewer.pal(11, "Spectral")))
+dataPlot <- data.frame(santarosaNormalized$N.Parcela..Longitud.de.onda, santarosa.pca$sdev)
+names(dataPlot) <- c("PCA", "Variances")
+dataPlot <- dataPlot[1:10,]
+dataPlot <- CalculateVariance(dataPlot)
 
-g <- ggbiplot(santarosa.pca, choices=c(1,2), obs.scale = 1, var.scale = 1, 
-              groups = resp, ellipse = TRUE, 
-              circle = TRUE)
-g <- g + scale_colour_gradientn(colours = myPalette(100))
-g <- g + scale_color_discrete(name = '') #NOO porque es solo para var. discretas
-g <- g + theme(legend.direction = 'horizontal', 
-               legend.position = 'top')
-print(g)
+#Plot PCA1/PCA2
+PCA1to2 <- data.frame(santarosa.pca$x[,1:2], performance)
+names(PCA1to2) <- c("PC1", "PC2", "Performance")
+
+ggplot(PCA1to2, aes_string(x = "PC1", y = "PC2")) + 
+  geom_point(aes(colour=Performance), na.rm = TRUE, alpha=0.8, size=2) + 
+  scale_color_gradientn(colours = c("darkred", "yellow", "darkgreen")) + #set the pallete
+  theme(panel.grid.minor=element_blank(), #remove gridlines
+        legend.position="bottom" #legend at the bottom
+  )#end theme
+
+save(santarosa.pca,file="SantarosaAllPCA.Rda") #Save object in your Documents folder
