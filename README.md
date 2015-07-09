@@ -33,3 +33,5 @@ The fifth script (5. Scatterplot Matrix) show the first 3 Principal Components a
 ## Regression
 
 __In Progress__
+
+Syntax guide: https://confluence.atlassian.com/display/STASH/Markdown+syntax+guide
