@@ -29,10 +29,10 @@ findNA <- function (x) {
 #This function remove all rows that contains a missing value
 #You must pass a Data.Frame (x) for identify all missing values and original DataSet
 #This function return a new DataSet without missing values
-removeRows <- function (x, dataSet) {
+removeRows <- function (missing, dataSet) {
   
-  for (i in 1:nrow(x)) {
-    dataSet <- dataSet[-x[i,1],] #Remove row
+  for (i in 1:nrow(missing)) {
+    dataSet <- dataSet[-missing[i,1],] #Remove row
   }
   
   return (dataSet)
