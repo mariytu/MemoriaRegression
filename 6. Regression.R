@@ -26,14 +26,44 @@ vcov(fit) # covariance matrix for model parameters
 influence(fit) # regression diagnostics
 
 # diagnostic plots 
-layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
+layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page
 plot(fit)
 
-# compare models
-fit1 <- lm(y ~ X[,1] + X[,2] + X[,3], data=X)
-fit2 <- lm(y ~ X[,1] + X[,2], data=X)
-anova(fit1, fit2)
+# Diagnostic plots usign ggplot
+#install.packages("devtools")
+library(devtools)
+#install_github("vqv/ggbiplot")
+library(ggbiplot)
 
+#Full screen
+layout(matrix(c(1),2,2))
+par("mar")
+par(mar=c(1,1,1,1))
+
+#dev.off()
+
+#Residuals v/s Fitted Values
+ggplot(fit, aes(.fitted, .resid)) +
+  geom_hline(yintercept = 0, colour = "grey50", size = 0.5) +
+  geom_point() +
+  geom_smooth(method = "auto", size = 0.7, se = F, colour = "#299E98") +
+  xlab("Fitted Values") +
+  ylab("Residuals")
+
+#K-fold cross-validation
+#install.packages("latticeExtra")
+#install.packages("DAAG")
+library(DAAG)
+layout(matrix(c(1),2,2))
+par(mar = c(5.1,4.1,4.1,2.1))
+asd <- cv.lm(df = PCA1to3, fit, m=10) # 10 fold cross-validation
+
+
+asd$performance - asd$Predicted
+
+for (i in 1:nrow(asd)) {
+  asd[i,4] - asd[i,5]
+}
 
 
 res <- y - (fit$coefficients[[3]]*PC3 + fit$coefficients[[3]]*PC2 + fit$coefficients[[2]]*PC1 + fit$coefficients[[1]])
@@ -52,13 +82,7 @@ par(mar=c(1,1,1,1))
 
 
 
-# K-fold cross-validation
-install.packages("latticeExtra")
-install.packages("DAAG")
-library(DAAG)
-layout(matrix(c(1),2,2))
-par(mar=c(5.1,4.1,4.1,2.1))
-cv.lm(df=mydata, fit, m=10) # 10 fold cross-validation
+
 
 
 
