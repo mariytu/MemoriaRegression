@@ -1,5 +1,8 @@
-makePairs <- function(data) 
-{
+#This code was obtained from https://gastonsanchez.wordpress.com/2012/08/27/scatterplot-matrices-with-ggplot/
+#We just made some minor changes
+
+#*******************************FUNCTIONS*******************************#
+makePairs <- function(data){
   grid <- expand.grid(x = 1:ncol(data), y = 1:ncol(data))
   grid <- subset(grid, x != y)
   all <- do.call("rbind", lapply(1:nrow(grid), function(i) {
@@ -13,19 +16,23 @@ makePairs <- function(data)
   densities <- do.call("rbind", lapply(1:ncol(data), function(i) {
     data.frame(xvar = names(data)[i], yvar = names(data)[i], x = data[, i])
   }))
-  list(all=all, densities=densities)
+  list(all = all, densities = densities)
 }
 
-library("RColorBrewer")
+#*******************************MAIN PROGRAM*******************************#
+#load("SantarosaAllPCA.Rda") #If you made the third or fourth step (3. PCA)
+load("D:/Dropbox/Marianela Iturriaga/data/SantarosaAllPCA.Rda") #Absolute path from my computer
+#load("SantarosaNormalized.Rda") #If you made the second or fourth step (2. NormalizedDataset)
+load("D:/Dropbox/Marianela Iturriaga/data/SantarosaNormalized.Rda") #Absolute path from my computer
 
 # expand data frame for pairs plot
-PCA1to3<-as.data.frame(santarosa.pca$x[,1:3])
+PCA1to3 <- as.data.frame(santarosa.pca$x[,1:3])
 gg1 = makePairs(PCA1to3)
+performance <- santarosaNormalized[,2154]
 
-resp <- normed[,2154]
-# new data frame mega PCA 1..5
-mega_PCA = data.frame(gg1$all, Performance=rep(resp, length=nrow(gg1$all)))
-Performance=rep(resp, length=nrow(gg1$all))
+#New data frame mega PCA 1..3
+mega_PCA = data.frame(gg1$all, Performance = rep(performance, length = nrow(gg1$all)))
+Performance = rep(performance, length = nrow(gg1$all))
 
 # pairs plot
 ggplot(mega_PCA, aes_string(x = "x", y = "y")) + 
@@ -42,7 +49,5 @@ ggplot(mega_PCA, aes_string(x = "x", y = "y")) +
         axis.title.y = element_blank()  #remove y label
         )#end theme
 
-#save(SantarosaPCA,file="Santarosa3PCA.Rda")
-#load("...")
-
-quantile(PCA1to3[,1])
+santarosa3PCA <- data.frame(PCA1to3, performance) #
+save(santarosa3PCA,file="Santarosa3PCA.Rda") #Save object in your Documents folder
