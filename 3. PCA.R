@@ -17,11 +17,16 @@ performance <- santarosaNormalized[,2154] #The column 2154 is the dependent vari
 
 #Apply PCA Algorithm
 santarosa.pca <- prcomp(subsetSantarosa, center = TRUE, scale. = TRUE)
-
+#show the eigen vector
 print(santarosa.pca)
+#statistical information regarding the PCA
+# the accumulated variance is key here
+#one method is to look for more than 85% of the cumulative deviation. that will give a rough
+#estimate regarindg which is the correct number of components.
 summary(santarosa.pca)
+#we can now calculate the position of every instance in the transformed space
 predict(santarosa.pca, newdata = tail(subsetSantarosa, 2))
-
+#elbow method. this is an alternative method for estimating the correct number of components
 plot(santarosa.pca, type = "l", main = NULL) #Plot of first 10 PCA
 
 #Alternative plot using ggplot

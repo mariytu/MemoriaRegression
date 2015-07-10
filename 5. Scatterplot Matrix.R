@@ -26,7 +26,7 @@ load("D:/Dropbox/Marianela Iturriaga/data/SantarosaAllPCA.Rda") #Absolute path f
 load("D:/Dropbox/Marianela Iturriaga/data/SantarosaNormalized.Rda") #Absolute path from my computer
 
 # expand data frame for pairs plot
-PCA1to3 <- as.data.frame(santarosa.pca$x[,1:3])
+PCA1to3 <- as.data.frame(santarosa.pca$x[,1:2])
 gg1 = makePairs(PCA1to3)
 performance <- santarosaNormalized[,2154]
 
@@ -36,6 +36,7 @@ Performance = rep(performance, length = nrow(gg1$all))
 
 # pairs plot
 ggplot(mega_PCA, aes_string(x = "x", y = "y")) + 
+  #subset(mega_PCA, xvar %in% c("PC1"), aes_string(x = "x", y = "y"))) +
   facet_grid(xvar ~ yvar, scales = "free") + 
   geom_point(aes(colour = Performance), na.rm = TRUE, alpha = 0.5, size = 1) + 
   stat_density(aes(x = x, y = ..scaled.. * diff(range(x)) + min(x)), 

@@ -1,6 +1,6 @@
 #*******************************FUNCTIONS*******************************#
-#This function return an integer(0) when no null values,
-#or a Data.Frame with all null values identified by their positions (i,j) 
+#This function returns an integer(0) when no null values,
+#or a Data.Frame with all null values identified by their positions (i,j)
 findNA <- function (x) {
   
   data <- data.frame(i=integer(), j=integer(), stringsAsFactors=FALSE)
@@ -40,8 +40,8 @@ removeRows <- function (missing, dataSet) {
 
 #*******************************MAIN PROGRAM*******************************#
 #Import data
-#santarosa <- read.csv("D:/Dropbox/Marianela Iturriaga/data/santarosa.csv", sep=";", dec=",") #Absolute path from my computer
-santarosa <- read.csv("https://dl.dropboxusercontent.com/u/12599702/santarosa.csv", sep=";", dec=",") #Path from URL
+santarosa <- read.csv("D:/Dropbox/Marianela Iturriaga/data/santarosa.csv", sep=";", dec=",") #Absolute path from my computer
+#santarosa <- read.csv("https://dl.dropboxusercontent.com/u/12599702/santarosa.csv", sep=";", dec=",") #Path from URL
 
 View(santarosa)
 NA_values <- findNA(santarosa)

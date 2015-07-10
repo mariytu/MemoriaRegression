@@ -1,5 +1,5 @@
 #*******************************FUNCTIONS*******************************#
-#This function received a dataset (x), a column to review and a value to compare
+#This function receives a dataset (x), a column to check and a value to compare
 #The value is compared with all values in colunm (col) and if it's less than value
 #their row (i) it's add in a dataframe to be returned. If any value is found, this
 #function return an integer(0)
