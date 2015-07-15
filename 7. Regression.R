@@ -1,7 +1,96 @@
-#SOURCE: http://www.statmethods.net/stats/regression.html
 #*******************************FUNCTIONS*******************************#
 
+diagnosticData <- function(santarosa.pca, performance) {
+  diagnostic <- data.frame(santarosa.pca$x[,1:3], performance)
+  names(diagnostic) <- c("PC1", "PC2", "PC3", "Performance")
+  resid <- resid(fit)
+  diagnostic <- data.frame(diagnostic, resid)
+  stz.r <- rstandard(fit)
+  diagnostic <- data.frame(diagnostic, stz.r)
+  stu.r <- rstudent(fit)
+  diagnostic <- data.frame(diagnostic, stu.r)
+  cooks <- cooks.distance(fit)
+  diagnostic <- data.frame(diagnostic, cooks)
+  dfbeta <- dfbeta(fit)
+  diagnostic <- data.frame(diagnostic, dfbeta)
+  dffit <- dffits(fit)
+  diagnostic <- data.frame(diagnostic, dffit)
+  leverage <- hatvalues(fit)
+  diagnostic <- data.frame(diagnostic, leverage)
+  cov.rat <- covratio(fit)
+  diagnostic <- data.frame(diagnostic, cov.rat)
+  fitted <- fitted(fit)
+  diagnostic <- data.frame(diagnostic, fitted)
+  sqrt.abs.stz.r <- sqrt(abs(diagnostic$stz.r))
+  diagnostic <- data.frame(diagnostic, sqrt.abs.stz.r)
+  
+  return (diagnostic)
+}
 
+ResidualsFitted <- function(diagnostic) {
+  ggplot(diagnostic, aes(fitted, resid)) +
+    geom_hline(yintercept = 0, colour = "grey50", size = 0.5, linetype="dashed") +
+    geom_point(aes(colour = Performance), na.rm = TRUE) + 
+    scale_color_gradientn(colours = c("darkred", "yellow", "darkgreen")) + #set the pallete
+    geom_smooth(method = "auto", size = 0.7, se = F, colour = "#299E98") +
+    xlab("Fitted Values") +
+    ylab("Residuals") +
+    theme(legend.position = "bottom" #legend at the bottom
+    )#end theme
+}
+
+StResidualsFitted <- function(diagnostic) {
+  ggplot(diagnostic, aes(fitted, sqrt.abs.stz.r)) +
+    geom_point(aes(colour = Performance), na.rm = TRUE) + 
+    scale_color_gradientn(colours = c("darkred", "yellow", "darkgreen")) + #set the pallete
+    geom_smooth(method = "auto", size = 0.7, se = F, colour = "#299E98") +
+    xlab("Fitted Values") +
+    ylab(expression(sqrt("|Standarized Residuals|"))) +
+    theme(legend.position = "bottom" #legend at the bottom
+    )#end theme
+}
+
+NormalQQ <- function(diagnostic) {
+  #SOURCE: http://librestats.com/2012/06/11/autoplot-graphical-methods-with-ggplot2/
+  
+  a <- quantile(diagnostic$stz.r, c(0.25, 0.75))
+  b <- qnorm(c(0.25, 0.75))
+  slope <- diff(a)/diff(b)
+  int <- a[1] - slope * b[1]
+  
+  ggplot(diagnostic, aes(sample = diagnostic$stz.r)) +
+    stat_qq() +
+    geom_abline(slope = slope, intercept = int, colour = "#299E98", linetype="dashed") +
+    scale_x_continuous("Theoretical Quantiles") +
+    scale_y_continuous("Standardized Residuals")
+}
+
+StResidualsLeverange <- function(diagnostic) {
+  ggplot(diagnostic, aes(leverage, stz.r)) +
+    geom_hline(yintercept = 0, colour = "grey50", size = 0.5, linetype="dashed") +
+    geom_point(aes(colour = Performance), na.rm = TRUE) + 
+    scale_color_gradientn(colours = c("darkred", "yellow", "darkgreen")) + #set the pallete
+    geom_smooth(method = "auto", size = 0.7, se = F, colour = "#299E98") +
+    xlab("Leverange") +
+    ylab("Standarized Residuals") +
+    theme(legend.position = "bottom" #legend at the bottom
+    )#end theme
+}
+
+#*******************************PACKAGES*******************************#
+#install.packages("Rcmdr")
+#install.packages("car")
+#install.packages("QuantPsyc")
+#install.packages("stringi")
+
+library(boot)
+library(car)
+library(MASS)
+library(QuantPsyc)
+library(Rcmdr)
+library(ggbiplot)
+
+#SOURCE: http://www.statmethods.net/stats/regression.html
 #*******************************MAIN PROGRAM*******************************#
 #load("SantarosaAllPCA.Rda") #If you made the third or fourth step (3. PCA)
 load("D:/Dropbox/Marianela Iturriaga/data/SantarosaAllPCA.Rda") #Absolute path from my computer
@@ -9,7 +98,7 @@ load("D:/Dropbox/Marianela Iturriaga/data/SantarosaAllPCA.Rda") #Absolute path f
 load("D:/Dropbox/Marianela Iturriaga/data/SantarosaNormalized.Rda") #Absolute path from my computer
 
 #Regression
-PCA1to3<-as.data.frame(santarosa.pca$x[,1:3])
+PCA1to3 <- as.data.frame(santarosa.pca$x[,1:3])
 performance <- santarosaNormalized[,2154]
 
 PC1 <- PCA1to3[,1]
@@ -17,139 +106,47 @@ PC2 <- PCA1to3[,2]
 PC3 <- PCA1to3[,3]
 
 fit <- lm(performance ~ PC1 + PC2 + PC3, data = PCA1to3)
+
 summary(fit)
+
+model <- function(fit, instance){
+  predicted = fit$coefficients[1]
+  predicted = predicted + fit$coefficients[2]*instance[1]
+  predicted = predicted + fit$coefficients[3]*instance[2]
+  predicted = predicted + fit$coefficients[4]*instance[3]
+  return (predicted)
+}
+
+#This provide a better insight into the 'importance' of a predictor in the model
+#bigger absolute value = more important
+lm.beta(fit)
+
+#Confidence intervals for model parameters
+confint(fit)
 
 # Other useful functions
 coefficients(fit) # model coefficients
-confint(fit, level=0.95) # CIs for model parameters
 fitted(fit) # predicted values
 residuals(fit) # residuals
 anova(fit) # anova table
 vcov(fit) # covariance matrix for model parameters
 influence(fit) # regression diagnostics
 
+#Comparing models
+fit1 <- lm(performance ~ PC1)
+fit3 <- lm(performance ~ PC1 + PC2 + PC3)
+anova(fit1, fit3)
+
 # diagnostic plots 
 layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page
 plot(fit)
 
-# Diagnostic plots usign ggplot
-#install.packages("devtools")
-library(devtools)
-#install_github("vqv/ggbiplot")
-library(ggbiplot)
-
-#Full screen
-layout(matrix(c(1),2,2))
-par("mar")
-par(mar=c(1,1,1,1))
-
-#dev.off()
-
-#Residuals v/s Fitted Values
-ggplot(fit, aes(.fitted, .resid)) +
-  geom_hline(yintercept = 0, colour = "grey50", size = 0.5) +
-  geom_point() +
-  geom_smooth(method = "auto", size = 0.7, se = F, colour = "#299E98") +
-  xlab("Fitted Values") +
-  ylab("Residuals")
-
-#K-fold cross-validation
-#install.packages("latticeExtra")
-#install.packages("DAAG")
-library(DAAG)
-layout(matrix(c(1),2,2))
-par(mar = c(5.1,4.1,4.1,2.1))
-asd <- cv.lm(df = PCA1to3, fit, m=10) # 10 fold cross-validation
-
-
-asd$performance - asd$Predicted
-
-for (i in 1:nrow(asd)) {
-  asd[i,4] - asd[i,5]
-}
-
-
-res <- y - (fit$coefficients[[3]]*PC3 + fit$coefficients[[3]]*PC2 + fit$coefficients[[2]]*PC1 + fit$coefficients[[1]])
-res
-layout(matrix(c(1),2,2))
-par(mar=c(5.1,4.1,4.1,2.1))
-plot(y,res)
-
-plot(y,fit$residuals)
-
-#When --> Error in plot.new() : figure margins too large
-layout(matrix(c(1),2,2))
-par("mar")
-par(mar=c(1,1,1,1))
+#Alternative plots using ggplot
+diagnostic <- diagnosticData(santarosa.pca, performance)
+ResidualsFitted(diagnostic)
+StResidualsFitted(diagnostic)
+NormalQQ(diagnostic)
+StResidualsLeverange(diagnostic)
 
 
 
-
-
-
-
-
-
-
-
-####Cross validation####
-# Assessing R2 shrinkage using 10-Fold Cross-Validation 
-install.packages("bootstrap")
-library(bootstrap)
-# define functions 
-theta.fit <- function(x,y){
-  lsfit(x,y)
-}
-theta.predict <- function(fit,x){
-  cbind(1,x)%*%fit$coefficients
-}
-
-# matrix of predictors
-X_x <- as.matrix(X[c("PC1","PC2","PC3")])
-# vector of predicted values
-y_y <- as.matrix(y)
-
-results <- crossval(X_x,y_y,theta.fit,theta.predict,ngroup=798)
-cor(y, fit$fitted.values)**2 # raw R2 
-cor(y,results$cv.fit)**2 # cross-validated R2
-
-
-
-
-
-#######Variable selection#######
-# Stepwise Regression
-install.packages("MASS")
-library(MASS)
-step <- stepAIC(fit, direction="both")
-step$anova # display results
-
-
-# All Subsets Regression
-install.packages("leaps")
-library(leaps)
-attach(X)
-leaps<-regsubsets(y~PC1+PC2+PC3,data=X,nbest=3)
-# view results 
-summary(leaps)
-# plot a table of models showing variables in each model.
-# models are ordered by the selection statistic.
-plot(leaps,scale="r2")
-# plot statistic by subset size
-install.packages("car")
-library(car)
-subsets(leaps, statistic="rsq")
-
-
-
-#Relative importance
-# Calculate Relative Importance for Each Predictor
-install.packages("relaimpo")
-library(relaimpo)
-calc.relimp(fit,type=c("lmg","last","first","pratt"),rela=TRUE)
-
-# Bootstrap Measures of Relative Importance (1000 samples) 
-boot <- boot.relimp(fit, b = 1000, type = c("lmg", "last", "first", "pratt"), rank = TRUE, 
-                    diff = TRUE, rela = TRUE)
-booteval.relimp(boot) # print result
-plot(booteval.relimp(boot,sort=TRUE)) # plot result
