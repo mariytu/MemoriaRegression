@@ -1,3 +1,6 @@
+
+#REV: http://www.statmethods.net/stats/rdiagnostics.html
+
 #*******************************FUNCTIONS*******************************#
 
 diagnosticData <- function(santarosa.pca, performance) {
@@ -148,5 +151,35 @@ StResidualsFitted(diagnostic)
 NormalQQ(diagnostic)
 StResidualsLeverange(diagnostic)
 
+#CROSS VALIDATION
+# K-fold cross-validation
+install.packages("DAAG")
+library(DAAG)
+layout(matrix(c(1),2,2))
+par(mar = c(5.1,4.1,4.1,2.1))
+cv.lm(df = PCA1to3, fit, m = 10) # 3 fold cross-validation
 
+# Assessing R2 shrinkage using 10-Fold Cross-Validation 
+install.packages("bootstrap")
+library(bootstrap)
+# define functions 
+theta.fit <- function(x, y) {
+  lsfit(x,y)
+}
+theta.predict <- function(fit, x){
+  cbind(1,x)%*%fit$coef
+}
 
+# matrix of predictors
+X <- as.matrix(PCA1to3[c("PC1","PC2","PC3")])
+# vector of predicted values
+y <- as.matrix(performance)
+
+results <- crossval(X, y, theta.fit, theta.predict, ngroup = 10)
+cor(y, fit$fitted.values)**2 # raw R2 
+cor(y, results$cv.fit)**2 # cross-validated R2
+
+# Stepwise Regression
+library(MASS)
+step <- stepAIC(fit, direction="both")
+step$anova # display results
