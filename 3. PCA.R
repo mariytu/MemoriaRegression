@@ -64,8 +64,6 @@ predict(santarosa.pca, newdata = tail(subsetSantarosa, 2))
 plot(santarosa.pca, type = "l", main = NULL) #Plot of first 10 PCA
 
 #Alternative plot using ggplot
-#install.packages("devtools")
-library(devtools)
 #install_github("vqv/ggbiplot")
 library(ggbiplot)
 linePlot(santarosa.pca, santarosaNormalized)

@@ -26,7 +26,7 @@ load("D:/Dropbox/Marianela Iturriaga/data/SantarosaAllPCA.Rda") #Absolute path f
 load("D:/Dropbox/Marianela Iturriaga/data/SantarosaNormalized.Rda") #Absolute path from my computer
 
 # expand data frame for pairs plot
-PCA1to3 <- as.data.frame(santarosa.pca$x[,1:2])
+PCA1to3 <- as.data.frame(santarosa.pca$x[,1:3])
 gg1 = makePairs(PCA1to3)
 performance <- santarosaNormalized[,2154]
 
