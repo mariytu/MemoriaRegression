@@ -4,7 +4,6 @@ normalize <- function(x){
   (x - min(x, na.rm=TRUE))/(max(x,na.rm=TRUE) - min(x, na.rm=TRUE))
 }
 
-
 #*******************************MAIN PROGRAM*******************************#
 #load("Santarosa.Rda") #If you made the first step (1. FindMissingValues)
 load("D:/Dropbox/Marianela Iturriaga/data/Santarosa.Rda") #Absolute path from my computer
@@ -20,7 +19,7 @@ subsetSantarosa <- subset(santarosa, select = X350:Rdto..gr.parc.) #Subset witho
 normedSubset <- as.data.frame(lapply(subsetSantarosa, normalize)) #Subset normalized
 
 #show the ranges just to be sure the ranges are correctly modified
-head(lapply(subsetSantarosa, range)) #Checking columns range between 0 to 1
+head(lapply(normedSubset, range)) #Checking columns range between 0 to 1
 
 #we copy the two first columns back into the data frame, just to maintain the original information
 twoColumns <- subset(santarosa, select = REPETICION:N.Parcela..Longitud.de.onda) #First two columns of original Dataset

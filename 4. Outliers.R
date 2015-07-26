@@ -37,15 +37,15 @@ removeRows <- function (outliers, dataSet) {
 #*******************************MAIN PROGRAM*******************************#
 #load("SantarosaAllPCA.Rda") #If you made the third step (3. PCA)
 load("D:/Dropbox/Marianela Iturriaga/data/SantarosaAllPCA.Rda") #Absolute path from my computer
-#load("SantarosaNormalized.Rda") #If you made the second step (2. NormalizedDataset)
-load("D:/Dropbox/Marianela Iturriaga/data/SantarosaNormalized.Rda") #Absolute path from my computer
+#load("Santarosa.Rda") #If you made the first step (1. FindMissingValues)
+load("D:/Dropbox/Marianela Iturriaga/data/Santarosa.Rda") #Absolute path from my computer
 
 outliers <- findOutliers(santarosa.pca$x, 1, -600)
 
 if (any(outliers)) { #Validation if outliers exist
-  santarosaNormalized <- removeRows(outliers, santarosaNormalized)
+  santarosa <- removeRows(outliers, santarosa)
 }
 
-View(santarosaNormalized)
+View(santarosa)
 
-save(santarosaNormalized,file = "SantarosaNormalized.Rda") #Save object in your Documents folder
+save(santarosa,file = "Santarosa.Rda") #Save object in your Documents folder
