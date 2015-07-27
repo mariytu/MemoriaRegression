@@ -110,7 +110,7 @@ layout(matrix(c(1),2,2))
 par(mar = c(5.1,4.1,4.1,2.1))
 cv.lm(df = PCA1to3, fit, m = 10) # 10 fold cross-validation
 
-#Our model to predict any observation
+  #Our model to predict any observation
 model <- function (santarosa, instance, santarosa.pca, fit) {
   subsetSantarosa <- subset(santarosa, select = X350:Rdto..gr.parc.)
   

@@ -63,6 +63,8 @@ NormalQQ <- function(diagnostic) {
   ggplot(diagnostic, aes(sample = diagnostic$stz.r)) +
     stat_qq() +
     geom_abline(slope = slope, intercept = int, colour = "#299E98", linetype="dashed") +
+    geom_abline(slope = 0, intercept = -2, colour = "#299E98", linetype="dashed") +
+    geom_abline(slope = 0, intercept = 2, colour = "#299E98", linetype="dashed") +
     scale_x_continuous("Theoretical Quantiles") +
     scale_y_continuous("Standardized Residuals")
 }
@@ -144,6 +146,10 @@ ResidualsFitted(diagnostic)
 StResidualsFitted(diagnostic)
 NormalQQ(diagnostic)
 StResidualsLeverange(diagnostic)
+
+possibleResiduals <- diagnostic$stz.r>2 | diagnostic$stz.r < -2
+sum(possibleResiduals)
+diagnostic[possibleResiduals,c("PC1", "PC2", "PC3", "Performance", "stz.r", "stu.r", "cooks", "leverage", "cov.rat")]
 
 delete <- data.frame(407,777,800)
 
